@@ -3,12 +3,14 @@ iD.ui.UndoRedo = function(context) {
         id: 'undo',
         cmd: iD.ui.cmd('⌘Z'),
         action: function() { if (!saving()) context.undo(); },
-        annotation: function() { return context.history().undoAnnotation(); }
+        annotation: function() { return context.history().undoAnnotation(); },
+        count: function() { return context.history().undoCount(); }
     }, {
         id: 'redo',
         cmd: iD.ui.cmd('⌘⇧Z'),
         action: function() { if (!saving()) context.redo(); },
-        annotation: function() { return context.history().redoAnnotation(); }
+        annotation: function() { return context.history().redoAnnotation(); },
+        count: function() { return context.history().redoCount(); }
     }];
 
     function saving() {
@@ -35,6 +37,10 @@ iD.ui.UndoRedo = function(context) {
         buttons.append('span')
             .attr('class', function(d) { return 'icon ' + d.id; });
 
+        buttons.append('span')
+            .attr('class', 'count')
+            .text('0');
+
         var keybinding = d3.keybinding('undo')
             .on(commands[0].cmd, function() { d3.event.preventDefault(); commands[0].action(); })
             .on(commands[1].cmd, function() { d3.event.preventDefault(); commands[1].action(); });
@@ -58,6 +64,10 @@ iD.ui.UndoRedo = function(context) {
                         selection.call(tooltip.show);
                     }
                 });
+
+            buttons.select('span.count')
+                .style('display', function(d) { return d.count() > 0 ? 'inline' : 'none'; })
+                .text(function(d) { return d.count(); });
         }
     };
 };

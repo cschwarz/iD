@@ -121,6 +121,14 @@ iD.History = function(context) {
             }
         },
 
+        undoCount: function() {
+            return index;
+        },
+
+        redoCount: function() {
+            return stack.length - index - 1;
+        },
+
         intersects: function(extent) {
             return tree.intersects(extent, stack[index].graph);
         },
